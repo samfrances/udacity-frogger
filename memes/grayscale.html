@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+</head>
+<body>
+  <canvas id="c" width="200" height="200"></canvas>
+  <script>
+    var c = document.getElementById("c");
+    var ctx = c.getContext("2d");
+
+    // Put image on canvas for testing
+    var image = new Image();
+
+    image.addEventListener('load', function() {
+      console.log("Loaded image");
+      ctx.drawImage(image, 0, 0, c.width, c.height);
+      grayscale(ctx, c);
+    });
+
+    image.src = "fry_fixed.jpg"
+
+    // Wrapper to make querying and settung pixels easier
+    function ImageDataWrapper(imageData) {
+      this.imageData = imageData;
+    }
+    ImageDataWrapper.prototype.getPixel = function(i) {
+      var data = this.imageData.data;
+       var pixel = {
+         red: data[i * 4],
+         green: data[ (i * 4) + 1 ],
+         blue: data[ (i * 4) + 2 ],
+         alpha: data[ (i * 4) + 3]
+       };
+       return pixel;
+    };
+    ImageDataWrapper.prototype.setPixel = function(i, red, green, blue, alpha) {
+      var data = this.imageData.data;
+      var offset = i * 4;
+      data[offset] = red;
+      data[offset + 1] = green;
+      data[offset + 2] = blue;
+      data[offset + 3] = alpha;
+    }
+    Object.defineProperty(ImageDataWrapper.prototype, 'length', {
+      get: function() {
+        return this.imageData.data.length / 4;
+      }
+    });
+
+    function grayscale(context, canvas) {
+      var data = new ImageDataWrapper(context.getImageData(0,0, canvas.width, canvas.height));
+      for (var i = 0, max = data.length; i < max; i++) {
+        var pixel = data.getPixel(i);
+        var average = (pixel.red + pixel.green + pixel.blue) / 3;
+        data.setPixel(i, average, average, average, 255);
+      }
+      ctx.putImageData(data.imageData, 0, 0);
+      
+    }
+    
+
+  </script>
+</body>
+</html>
