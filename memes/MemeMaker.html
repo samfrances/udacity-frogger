@@ -47,7 +47,28 @@
       // Get Canvas2DContext
       var canvas = document.querySelector('canvas');
       var ctx = canvas.getContext("2d");
-      // Your code here
+      
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw image
+      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+      // Drawing settings
+      ctx.font = "36pt Impact";
+      ctx.textAlign = "center";
+      ctx.fillStyle = "white";
+      ctx.strokeStyle = "black";
+      ctx.lineWidth = 3;
+
+      // Draw top line
+      ctx.fillText(topLine, canvas.width / 2, 60);
+      ctx.strokeText(topLine, canvas.width / 2, 60);
+
+      // Draw bottom line
+      ctx.fillText(bottomLine, canvas.width / 2, canvas.height - 40);
+      ctx.strokeText(bottomLine, canvas.width / 2, canvas.height - 40);
+      
     }
     
     function saveFile() {
@@ -71,7 +92,7 @@
         image.onload = function() {
           
           window.imageSrc = this;
-          redrawMeme(window.imageSrc, null, null);
+          redrawMeme(window.imageSrc, window.topLineText, window.bottomLineText);
         }
         
         // Set image data to background image.
