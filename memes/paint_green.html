@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+</head>
+<body>
+  <canvas id="c" width="200" height="200"></canvas>
+  <script>
+    var c = document.getElementById("c");
+    var ctx = c.getContext("2d");
+
+    function paintGreen(context) {
+      var data = context.getImageData(0,0, c.width, c.height)
+
+      var PIXLENGTH = 4;
+      var GREEN_OFFSET = 1;
+      var ALPHA_OFFSET = 3;
+
+      for (var i = 0, max = data.data.length; i < max; i += 10*PIXLENGTH) {
+        data.data[i+GREEN_OFFSET] = 255;
+        data.data[i+ALPHA_OFFSET] = 255;
+      }
+      context.putImageData(data, 0, 0);
+    }
+
+    paintGreen(ctx);
+
+  </script>
+</body>
+</html>
