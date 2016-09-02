@@ -47,27 +47,29 @@
       // Get Canvas2DContext
       var canvas = document.querySelector('canvas');
       var ctx = canvas.getContext("2d");
-      
-      // Clear canvas
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Draw image
-      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+      if (image != null)
+        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 
       // Drawing settings
-      ctx.font = "36pt Impact";
+      ctx.font = "30pt Impact";
       ctx.textAlign = "center";
       ctx.fillStyle = "white";
       ctx.strokeStyle = "black";
       ctx.lineWidth = 3;
 
       // Draw top line
-      ctx.fillText(topLine, canvas.width / 2, 60);
-      ctx.strokeText(topLine, canvas.width / 2, 60);
+      if (topLine != null) {
+        ctx.fillText(topLine, canvas.width / 2, 40);
+        ctx.strokeText(topLine, canvas.width / 2, 40);
+      }
 
       // Draw bottom line
-      ctx.fillText(bottomLine, canvas.width / 2, canvas.height - 40);
-      ctx.strokeText(bottomLine, canvas.width / 2, canvas.height - 40);
+      if (bottomLine != null) {
+        ctx.fillText(bottomLine, canvas.width / 2, canvas.height - 20);
+        ctx.strokeText(bottomLine, canvas.width / 2, canvas.height - 20);
+      }
       
     }
     
@@ -92,7 +94,7 @@
         image.onload = function() {
           
           window.imageSrc = this;
-          redrawMeme(window.imageSrc, window.topLineText, window.bottomLineText);
+          redrawMeme(window.imageSrc, null, null);
         }
         
         // Set image data to background image.
