@@ -29,6 +29,60 @@ var Engine = (function(global) {
     canvas.height = 606;
     doc.body.appendChild(canvas);
 
+    function initScoreBoard() {
+        // Add score board
+        var scoreboard = doc.createElement('div');
+        scoreboard.classList.add('scoreboard');
+
+        // Add crashes section
+        scoreboard.appendChild(doc.createTextNode('Crashes: '));
+        var crashes_score = doc.createElement('span');
+        crashes_score.innerText = "0";
+        scoreboard.appendChild(crashes_score);
+        scoreboard.appendChild(doc.createElement('br'));
+
+        // Add wins section
+        scoreboard.appendChild(doc.createTextNode('Wins: '));
+        var wins_score = doc.createElement('span');
+        wins_score.innerText = "0";
+        scoreboard.appendChild(wins_score);
+
+        // Append scoreboard
+        doc.body.appendChild(scoreboard);
+
+        // Watch for changes to scores
+        score.subscribe(function(message) {
+            crashes_score.innerText = message.crashes;
+            wins_score.innerText = message.wins;
+        });
+    }
+
+    function initPlayerChoiceForm() {
+        var playerChoice = document.createElement('div');
+        var playerImgs = [
+            'images/char-boy.png',
+            'images/char-cat-girl.png',
+            'images/char-horn-girl.png',
+            'images/char-pink-girl.png',
+            'images/char-princess-girl.png'
+        ];
+        playerImgs.forEach(function(url) {
+            var img = Resources.get(url);
+            img.dataset.sprite = url;
+            img.classList.add('pointer');
+            playerChoice.appendChild(img);
+        });
+
+        playerChoice.addEventListener('click', function(e) {
+            if (e.target.src != null) {
+                player.sprite = e.target.dataset.sprite;
+            }
+        });
+
+        doc.body.appendChild(playerChoice);
+
+    }
+
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.
      */
@@ -65,6 +119,11 @@ var Engine = (function(global) {
      */
     function init() {
         reset();
+
+        // Extra interface sections initialised
+        initScoreBoard();
+        initPlayerChoiceForm()
+
         lastTime = Date.now();
         main();
     }
@@ -171,7 +230,11 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/char-cat-girl.png',
+        'images/char-horn-girl.png',
+        'images/char-pink-girl.png',
+        'images/char-princess-girl.png'
     ]);
     Resources.onReady(init);
 
