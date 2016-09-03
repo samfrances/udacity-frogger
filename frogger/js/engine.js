@@ -70,8 +70,7 @@ var Engine = (function(global) {
             'images/char-boy.png',
             'images/char-cat-girl.png',
             'images/char-horn-girl.png',
-            'images/char-pink-girl.png',
-            'images/char-princess-girl.png'
+            'images/char-pink-girl.png'
         ];
         playerImgs.forEach(function(url) {
             var img = Resources.get(url);
