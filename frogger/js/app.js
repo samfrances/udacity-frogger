@@ -144,6 +144,8 @@ var Player = function() {
     this._resetPosition();
     this.sprite = 'images/char-boy.png';
 
+    this.state = {type: "active"};
+
     // Specify bounding box for collision detection
     this._setBoundingBox(25, 85, 65, 40);
 
@@ -168,39 +170,43 @@ Player.prototype.checkCollisions = function() {
 };
 
 Player.prototype.handleInput = function(direction) {
+    if (this.state.type == "active") {
+        // Adjust column and row of player
+        if (direction === 'left') {
+            this.col--;
+        } else if (direction === 'right') {
+            this.col++;
+        } else if (direction === 'up') {
+            this.row--;
+        } else {
+            this.row++;
+        }
 
-    // Adjust column and row of player
-    if (direction === 'left') {
-        this.col--;
-    } else if (direction === 'right') {
-        this.col++;
-    } else if (direction === 'up') {
-        this.row--;
-    } else {
-        this.row++;
-    }
+        // Check if player has won
+        if (this.row < 0) {
+            // register win
+            score.win();
 
-    // Check if player has won
-    if (this.row < 0) {
-        // register win
-        score.win();
+            // Reset player position
+            this.state = {
+                type: "win_paused",
+                countdown: 60
+            };
+        }
 
-        // Reset player position
-        this._resetPosition();
-    }
-
-    // Keep player within bounds
-    if (this.row > 4) {
-        this.row--;
-    }
-    if (this.col > 4) {
-        this.col--;
-    }
-    if (this.col < 0) {
-        this.col++;
-    }
-    if (this.row < -1) {
-        this.row++;
+        // Keep player within bounds
+        if (this.row > 4) {
+            this.row--;
+        }
+        if (this.col > 4) {
+            this.col--;
+        }
+        if (this.col < 0) {
+            this.col++;
+        }
+        if (this.row < -1) {
+            this.row++;
+        }
     }
 };
 
@@ -211,8 +217,8 @@ Player.prototype.update = function() {
     this.x = base_x + (100 * this.col);
     this.y = base_y + (80 * this.row);
 
-    // Check for collisions
-    if (this.checkCollisions()) {
+    // Check for collisions, if the player is active
+    if (this.state.type == "active" && this.checkCollisions()) {
 
         // register crash
         score.crash();
@@ -220,6 +226,19 @@ Player.prototype.update = function() {
         // Put player back in start position
         this._resetPosition();
         this.update();
+    }
+
+    // If the player has recently won and is in a temporarily paused state
+    // following a win, count down this state and reset once it has
+    // expired, returing player to original position and active state
+    if (this.state.type == "win_paused") {
+        if (this.state.countdown == 0) {
+            this.state = {type: "active"};
+            this._resetPosition();
+            this.update();
+        } else {
+            this.state.countdown--;
+        }
     }
 };
 
