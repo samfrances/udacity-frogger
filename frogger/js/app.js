@@ -1,5 +1,6 @@
 (function(){
 
+/* Score object. Registers wins and crashes, and alerts subscriber callbacks */
 window.score = {
     _crashes: 0,
 
@@ -32,11 +33,6 @@ window.score = {
     }
 };
 
-function declare(m) {
-    console.log(m);
-}
-score.subscribe(declare);
-
 
 // Sprite class with methods common to enemies and players
 var Sprite = function() {};
@@ -46,9 +42,19 @@ Sprite.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 };
 
+/* Set a bounding box for a sprite, to facilitate collision detection, given
+ * that the image may be larger than its visible portion.
+ *
+ * x_offset tells you the x coordinate of the top left corner of the box,
+ * relative to the sprite's position at any time.
+ *
+ * y_offset tells you the y coordinate of the top left corner of the box,
+ * relative to the sprite's position at any time
+ */
 Sprite.prototype._setBoundingBox = function(x_offset, y_offset, width, height) {
     var sprite = this;
     this.box = {
+        // min is the top-left corner of the box
         min: {
             get x() {
                 return sprite.x + x_offset;
@@ -57,6 +63,7 @@ Sprite.prototype._setBoundingBox = function(x_offset, y_offset, width, height) {
                 return sprite.y + y_offset;
             }
         },
+        // max is the bottom-right corner of the box
         max: {
             get x() {
                 return sprite.x + x_offset + width;
@@ -93,6 +100,7 @@ var Enemy = function(speed) {
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
 
+    // Specify bounding box for collision detection
     this._setBoundingBox(0, 95, 100, 50);
 };
 
@@ -107,6 +115,8 @@ Enemy.prototype.update = function(dt) {
     // which will ensure the game runs at the same speed for
     // all computers.
     this.x += dt * this.speed;
+
+    // If enemy drives off screen right, reset the enemy and use again
     if (this.x >= ctx.canvas.width)
         this._resetPosition();
 };
@@ -118,6 +128,8 @@ Enemy.prototype._resetPosition = function() {
     var lane = Math.floor((Math.random() * 3));
 
     this.y = ((lane + 1) + 65) + lane * 80;
+
+    // x position starts just off screen left
     this.x = -92;
 };
 
@@ -131,6 +143,8 @@ var Player = function() {
 
     this._resetPosition();
     this.sprite = 'images/char-boy.png';
+
+    // Specify bounding box for collision detection
     this._setBoundingBox(25, 85, 65, 40);
 
 };
@@ -138,11 +152,13 @@ var Player = function() {
 Player.prototype = Object.create(Sprite.prototype);
 Player.prototype.constructor = Player;
 
+/* Put player back in start position */
 Player.prototype._resetPosition = function() {
     this.row = 4;
     this.col = 2;
 };
 
+/* Check if the player is in collision with any enemies */
 Player.prototype.checkCollisions = function() {
     for (var i = 0, max = allEnemies.length; i < max; i++) {
         if (this.intersects(allEnemies[i]))
@@ -166,7 +182,10 @@ Player.prototype.handleInput = function(direction) {
 
     // Check if player has won
     if (this.row < 0) {
+        // register win
         score.win();
+
+        // Reset player position
         this._resetPosition();
     }
 
@@ -194,7 +213,11 @@ Player.prototype.update = function() {
 
     // Check for collisions
     if (this.checkCollisions()) {
+
+        // register crash
         score.crash();
+
+        // Put player back in start position
         this._resetPosition();
         this.update();
     }

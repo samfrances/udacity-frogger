@@ -30,6 +30,11 @@ var Engine = (function(global) {
     doc.body.appendChild(canvas);
 
     function initScoreBoard() {
+        /* Creates the scoreboard, appends to the body, and registers a
+         * callback with the score object to automatically update the
+         * scoreboard
+         */
+
         // Add score board
         var scoreboard = doc.createElement('div');
         scoreboard.classList.add('scoreboard');
@@ -58,6 +63,8 @@ var Engine = (function(global) {
     }
 
     function initPlayerChoiceForm() {
+        /* Create interface for changing player sprite image */
+
         var playerChoice = document.createElement('div');
         var playerImgs = [
             'images/char-boy.png',
@@ -68,17 +75,20 @@ var Engine = (function(global) {
         ];
         playerImgs.forEach(function(url) {
             var img = Resources.get(url);
-            img.dataset.sprite = url;
+            img.dataset.sprite = url; // use data property to store relative url of image
             img.classList.add('pointer');
             playerChoice.appendChild(img);
         });
 
+        // Add event listener to change character upon click on player image
+        // choice interface
         playerChoice.addEventListener('click', function(e) {
             if (e.target.src != null) {
                 player.sprite = e.target.dataset.sprite;
             }
         });
 
+        // Add the player choice interface to the dom
         doc.body.appendChild(playerChoice);
 
     }
