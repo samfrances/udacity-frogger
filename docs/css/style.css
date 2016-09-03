@@ -1,0 +1,15 @@
+body {
+    text-align: center;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.pointer:hover {
+    background-color: #ededed;
+}
+
+.scoreboard {
+    font-size: 30px;
+}
